@@ -7,10 +7,12 @@ namespace Bowling_Challenge
     class BowlingGameManager
     {
         static int INITIAL_PIN_NUMBER = 10;
+        
+        public bool isGameOver;
+
         Frame[] frames;
         int pinsOnLane;
         int currentFrameNumber;
-        public bool isGameOver;
 
         public BowlingGameManager()
         {
@@ -28,17 +30,9 @@ namespace Bowling_Challenge
         {
             Frame currentFrame = this.frames[this.currentFrameNumber - 1];
             currentFrame.shotsLeft -= 1;
-            this.pinsOnLane -= pinsHit;
-            if (this.pinsOnLane == 0 && currentFrame.shotsLeft == 1)
-            {
-                calculateFrameScore(true, false);
-            } else if (this.pinsOnLane == 0)
-            {
-                this.calculateFrameScore(false, true);
-            } else if (currentFrame.shotsLeft == 0)
-            {
-                this.calculateFrameScore(false, false);
-            }
+            
+            this.calculateFrameScore(pinsHit);
+            this.calculatePriorStrikeAndSpareBonus();
             this.detectGameOver();
         }
 
@@ -47,19 +41,65 @@ namespace Bowling_Challenge
             int totalScore = 0;
             for (int i = 0; i < currentFrameNumber; i++)
             {
-                totalScore += this.frames[i].score;
+                totalScore += this.frames[i].frameScore;
             }
             return totalScore;
         }
 
-        private void calculateFrameScore(bool strike, bool spare)
+        public int[] getFrameScoreBreakDown()
+        {
+            int[] scoreBreakdown = new int[10];
+            for (int i = 0; i < 10; i++)
+            {
+                scoreBreakdown[i] = i == 0 ? this.frames[0].frameScore : this.frames[i].frameScore + scoreBreakdown[i - 1];
+            }
+            return scoreBreakdown;
+        }
+
+        private void calculateFrameScore(int pinsHit)
         {
             Frame currentFrame = this.frames[currentFrameNumber - 1];
-            currentFrame.isStrike = strike;
-            currentFrame.isSpare = spare;
-            currentFrame.score = INITIAL_PIN_NUMBER - this.pinsOnLane;
-            this.pinsOnLane = INITIAL_PIN_NUMBER;
-            this.currentFrameNumber++;
+            if (currentFrame.shotsLeft == 1 && pinsHit == INITIAL_PIN_NUMBER)
+            {
+                currentFrame.firstShotScore = 10;
+                currentFrame.isStrike = true;
+                this.pinsOnLane = INITIAL_PIN_NUMBER;
+                this.currentFrameNumber++;
+            } else if (currentFrame.shotsLeft == 1)
+            {
+                currentFrame.firstShotScore = pinsHit;
+                this.pinsOnLane -= pinsHit;
+            } else
+            {
+                currentFrame.secondShotScore = pinsHit;
+                currentFrame.isSpare = pinsOnLane - pinsHit == 0;
+                this.pinsOnLane = INITIAL_PIN_NUMBER;
+                this.currentFrameNumber++;
+            }
+        }
+
+        private void calculatePriorStrikeAndSpareBonus()
+        {
+            if (this.currentFrameNumber <= 10)
+            {
+                Frame currentFrame = this.frames[this.currentFrameNumber - 1];
+                Frame priorFrame = this.currentFrameNumber > 1 ? this.frames[this.currentFrameNumber - 2] : null;
+                Frame priorPriorFrame = this.currentFrameNumber > 2 ? this.frames[this.currentFrameNumber - 3] : null;
+
+                if (priorFrame != null && priorFrame.isSpare)
+                {
+                    priorFrame.bonusScore = currentFrame.firstShotScore;
+                }
+                else if (priorFrame != null && priorFrame.isStrike)
+                {
+                    priorFrame.bonusScore = currentFrame.firstShotScore + currentFrame.secondShotScore;
+                }
+
+                if (priorPriorFrame != null && priorPriorFrame.isStrike)
+                {
+                    priorPriorFrame.bonusScore = currentFrame.firstShotScore + currentFrame.secondShotScore;
+                }
+            }
         }
 
         private void detectGameOver()

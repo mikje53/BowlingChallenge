@@ -76,12 +76,28 @@ namespace Bowling_Challenge
             {
                 GutterBtn.IsEnabled = false;
                 RandomRollBtn.IsEnabled = false;
-                SpecificRollBtn.IsEnabled = false;
                 SpareBtn.IsEnabled = false;
-                StrikeBtn.IsEnabled = false;
+                StrikeBtn.IsEnabled = false; 
 
-                Scoreboard.Content = "Game Over. Final score is: " + gameManager.calculateScore();
+                String scoreboardContent = "Game Over. Final score is: " + gameManager.calculateScore() + "\n\n" + createScoreBreakdownString();
+
+                Scoreboard.Content = scoreboardContent;
             }
+        }
+
+        private String createScoreBreakdownString()
+        {
+            int[] scoreBreakdown = gameManager.getFrameScoreBreakDown();
+            return "Frame 1: " + scoreBreakdown[0] + "\n" +
+                "Frame 2: " + scoreBreakdown[1] + "\n" +
+                "Frame 3: " + scoreBreakdown[2] + "\n" +
+                "Frame 4: " + scoreBreakdown[3] + "\n" +
+                "Frame 5: " + scoreBreakdown[4] + "\n" +
+                "Frame 6: " + scoreBreakdown[5] + "\n" +
+                "Frame 7: " + scoreBreakdown[6] + "\n" +
+                "Frame 8: " + scoreBreakdown[7] + "\n" +
+                "Frame 9: " + scoreBreakdown[8] + "\n" +
+                "Frame 10: " + scoreBreakdown[9] + "\n";
         }
     }
 }
