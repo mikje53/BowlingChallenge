@@ -20,35 +20,68 @@ namespace Bowling_Challenge
     /// </summary>
     public partial class MainWindow : Window
     {
+        private BowlingGameManager gameManager;
 
         public MainWindow()
         {
             InitializeComponent();
+            gameManager = new BowlingGameManager();
+
         }
 
         public void randomRoll(object sender, RoutedEventArgs e)
         {
-            Scoreboard.Content = "Random Roll";
+            gameManager.rollBall(1);
+            updateScoreboard();
+            detectGameOver();
         }
 
         public void specificRoll(object sender, RoutedEventArgs e)
         {
-            Scoreboard.Content = "Specific Roll";
+            gameManager.rollBall(1);
+            updateScoreboard();
+            detectGameOver();
         }
 
         public void spareRoll(object sender, RoutedEventArgs e)
         {
-            Scoreboard.Content = "Spare Roll";
+            gameManager.rollBall(5);
+            gameManager.rollBall(5);
+            updateScoreboard();
+            detectGameOver();
         }
 
         public void strikeRoll(object sender, RoutedEventArgs e)
         {
-            Scoreboard.Content = "Strike Roll";
+            gameManager.rollBall(10);
+            updateScoreboard();
+            detectGameOver();
         }
 
         public void gutterRoll(object sender, RoutedEventArgs e)
         {
-            Scoreboard.Content = "Gutter Roll";
+            gameManager.rollBall(0);
+            updateScoreboard();
+            detectGameOver();
+        }
+
+        private void updateScoreboard()
+        {
+            Scoreboard.Content = gameManager.calculateScore();
+        }
+
+        private void detectGameOver()
+        {
+            if (gameManager.isGameOver)
+            {
+                GutterBtn.IsEnabled = false;
+                RandomRollBtn.IsEnabled = false;
+                SpecificRollBtn.IsEnabled = false;
+                SpareBtn.IsEnabled = false;
+                StrikeBtn.IsEnabled = false;
+
+                Scoreboard.Content = "Game Over. Final score is: " + gameManager.calculateScore();
+            }
         }
     }
 }
