@@ -62,7 +62,7 @@ namespace Bowling_Challenge
 
         private void updateScoreboard()
         {
-            Scoreboard.Content = gameManager.calculateScore();
+            Scoreboard.Content = "Total score: " + gameManager.calculateTotalScore();
         }
 
         private void detectGameOver()
@@ -72,27 +72,25 @@ namespace Bowling_Challenge
                 GutterBtn.IsEnabled = false;
                 RandomRollBtn.IsEnabled = false;
                 SpareBtn.IsEnabled = false;
-                StrikeBtn.IsEnabled = false; 
+                StrikeBtn.IsEnabled = false;
 
-                String scoreboardContent = "Game Over. Final score is: " + gameManager.calculateScore() + "\n\n" + createScoreBreakdownString();
+                string scoreboardContent = "Game Over. Final score is: " + gameManager.calculateTotalScore() + "\n\n" + createScoreBreakdownString();
 
                 Scoreboard.Content = scoreboardContent;
             }
         }
 
-        private String createScoreBreakdownString()
+        private string createScoreBreakdownString()
         {
             int[] scoreBreakdown = gameManager.getFrameScoreBreakDown();
-            return "Frame 1: " + scoreBreakdown[0] + "\n" +
-                "Frame 2: " + scoreBreakdown[1] + "\n" +
-                "Frame 3: " + scoreBreakdown[2] + "\n" +
-                "Frame 4: " + scoreBreakdown[3] + "\n" +
-                "Frame 5: " + scoreBreakdown[4] + "\n" +
-                "Frame 6: " + scoreBreakdown[5] + "\n" +
-                "Frame 7: " + scoreBreakdown[6] + "\n" +
-                "Frame 8: " + scoreBreakdown[7] + "\n" +
-                "Frame 9: " + scoreBreakdown[8] + "\n" +
-                "Frame 10: " + scoreBreakdown[9] + "\n";
+            int frameCounter = 1;
+            string scoreBreakdownString = "";
+            foreach( int score in scoreBreakdown)
+            {
+                scoreBreakdownString += "Frame " + frameCounter + ": " + score + "\n";
+                frameCounter++;
+            }
+            return scoreBreakdownString;
         }
     }
 }

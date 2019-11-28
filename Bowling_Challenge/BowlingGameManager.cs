@@ -29,19 +29,32 @@ namespace Bowling_Challenge
         public void rollBall(int pinsHit)
         {
             Frame currentFrame = this.frames[this.currentFrameNumber - 1];
-            currentFrame.shotsLeft -= 1;
-            
-            this.calculateFrameScore(pinsHit);
-            this.calculatePriorStrikeAndSpareBonus();
-            if(currentFrame.isStrike || currentFrame.shotsLeft == 0)
+            if (currentFrame.shotsLeft > 0)
             {
-                this.currentFrameNumber++;
-                this.pinsOnLane = INITIAL_PIN_NUMBER;
+                currentFrame.shotsLeft -= 1;
+                this.calculateFrameScore(pinsHit, currentFrame);
+                this.calculatePriorStrikeAndSpareBonuses();
+                this.pinsOnLane -= pinsHit;
+                if (currentFrame.isStrike || currentFrame.shotsLeft == 0)
+                {
+                    this.currentFrameNumber++;
+                    if (this.currentFrameNumber == 11 && currentFrame.shotsLeft == 0 &&
+                        (this.pinsOnLane == 0 ||currentFrame.isStrike) && !currentFrame.bonusShotEarned)
+                    {
+                        currentFrame.bonusShotEarned = true;
+                        currentFrame.shotsLeft = 1;
+                        this.currentFrameNumber = 10;
+                    } else if (this.currentFrameNumber == 11  && currentFrame.isStrike && currentFrame.shotsLeft > 0)
+                    {
+                        this.currentFrameNumber = 10;
+                    }
+                    this.pinsOnLane = INITIAL_PIN_NUMBER;
+                }
             }
             this.detectGameOver();
         }
 
-        public int calculateScore()
+        public int calculateTotalScore()
         {
             int totalScore = 0;
             for (int i = 0; i < currentFrameNumber; i++)
@@ -61,9 +74,8 @@ namespace Bowling_Challenge
             return scoreBreakdown;
         }
 
-        private void calculateFrameScore(int pinsHit)
+        private void calculateFrameScore(int pinsHit, Frame currentFrame)
         {
-            Frame currentFrame = this.frames[currentFrameNumber - 1];
             if (currentFrame.shotsLeft == 1 && pinsHit == INITIAL_PIN_NUMBER)
             {
                 currentFrame.firstShotScore = 10;
@@ -71,16 +83,21 @@ namespace Bowling_Challenge
             } else if (currentFrame.shotsLeft == 1)
             {
                 currentFrame.firstShotScore = pinsHit;
-                this.pinsOnLane -= pinsHit;
             } else
             {
-                currentFrame.secondShotScore = pinsHit;
-                currentFrame.isSpare = pinsOnLane - pinsHit == 0;
+                if (currentFrame.bonusShotEarned)
+                {
+                    currentFrame.bonusScore += pinsHit;
+                } else
+                {
+                    currentFrame.secondShotScore = pinsHit;
+                    currentFrame.isSpare = pinsOnLane - pinsHit == 0;
+                }
                 
             }
         }
 
-        private void calculatePriorStrikeAndSpareBonus()
+        private void calculatePriorStrikeAndSpareBonuses()
         {
             if (this.currentFrameNumber <= 10)
             {
