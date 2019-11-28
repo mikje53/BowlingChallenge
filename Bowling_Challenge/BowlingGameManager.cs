@@ -9,9 +9,9 @@ namespace Bowling_Challenge
         static int INITIAL_PIN_NUMBER = 10;
         
         public bool isGameOver;
+        public int pinsOnLane;
 
         Frame[] frames;
-        int pinsOnLane;
         int currentFrameNumber;
 
         public BowlingGameManager()
@@ -33,6 +33,11 @@ namespace Bowling_Challenge
             
             this.calculateFrameScore(pinsHit);
             this.calculatePriorStrikeAndSpareBonus();
+            if(currentFrame.isStrike || currentFrame.shotsLeft == 0)
+            {
+                this.currentFrameNumber++;
+                this.pinsOnLane = INITIAL_PIN_NUMBER;
+            }
             this.detectGameOver();
         }
 
@@ -63,8 +68,6 @@ namespace Bowling_Challenge
             {
                 currentFrame.firstShotScore = 10;
                 currentFrame.isStrike = true;
-                this.pinsOnLane = INITIAL_PIN_NUMBER;
-                this.currentFrameNumber++;
             } else if (currentFrame.shotsLeft == 1)
             {
                 currentFrame.firstShotScore = pinsHit;
@@ -73,8 +76,7 @@ namespace Bowling_Challenge
             {
                 currentFrame.secondShotScore = pinsHit;
                 currentFrame.isSpare = pinsOnLane - pinsHit == 0;
-                this.pinsOnLane = INITIAL_PIN_NUMBER;
-                this.currentFrameNumber++;
+                
             }
         }
 
@@ -97,7 +99,10 @@ namespace Bowling_Challenge
 
                 if (priorPriorFrame != null && priorPriorFrame.isStrike)
                 {
-                    priorPriorFrame.bonusScore = currentFrame.firstShotScore + currentFrame.secondShotScore;
+                    if (priorFrame.isStrike)
+                    {
+                        priorPriorFrame.bonusScore = priorFrame.firstShotScore + currentFrame.firstShotScore;
+                    }
                 }
             }
         }

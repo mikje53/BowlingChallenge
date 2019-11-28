@@ -31,14 +31,9 @@ namespace Bowling_Challenge
 
         public void randomRoll(object sender, RoutedEventArgs e)
         {
-            gameManager.rollBall(1);
-            updateScoreboard();
-            detectGameOver();
-        }
-
-        public void specificRoll(object sender, RoutedEventArgs e)
-        {
-            gameManager.rollBall(1);
+            Random rand = new Random();
+            int pinsHit = rand.Next(0, gameManager.pinsOnLane);
+            gameManager.rollBall(pinsHit);
             updateScoreboard();
             detectGameOver();
         }
