@@ -33,29 +33,28 @@ namespace Bowling_Challenge
         {
             Random rand = new Random();
             int pinsHit = rand.Next(0, gameManager.pinsOnLane);
-            gameManager.rollBall(pinsHit);
-            updateScoreboard();
-            detectGameOver();
+            this.rollBall(pinsHit);
         }
 
         public void spareRoll(object sender, RoutedEventArgs e)
         {
-            gameManager.rollBall(5);
-            gameManager.rollBall(5);
-            updateScoreboard();
-            detectGameOver();
+            this.rollBall(5);
+            this.rollBall(5);
         }
 
         public void strikeRoll(object sender, RoutedEventArgs e)
         {
-            gameManager.rollBall(10);
-            updateScoreboard();
-            detectGameOver();
+            this.rollBall(10);
         }
 
         public void gutterRoll(object sender, RoutedEventArgs e)
         {
-            gameManager.rollBall(0);
+            this.rollBall(0);
+        }
+
+        private void rollBall(int pinsHit)
+        {
+            gameManager.rollBall(pinsHit);
             updateScoreboard();
             detectGameOver();
         }
